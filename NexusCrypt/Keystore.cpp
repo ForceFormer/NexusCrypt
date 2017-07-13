@@ -104,7 +104,10 @@ Keystore LoadKeystore(const std::string& filepath)
 		keystore.keytype = root.get("keytype", "").asString();
 
 		{
-			auto& crypto = root["Crypto"];
+			auto& crypto = root["crypto"];
+			if (crypto.empty())
+				crypto = root["Crypto"];
+
 			keystore.crypto.cipher = crypto.get("cipher", "").asString();
 			keystore.crypto.ciphertext = crypto.get("ciphertext", "").asString();			
 			SetData(keystore.crypto.cipherparams, crypto["cipherparams"]);
@@ -147,7 +150,7 @@ void SaveKeystore(const Keystore& keystore, const std::string& filepath)
 
 			crypto["mac"] = keystore.crypto.mac;
 
-			root["Crypto"] = crypto;
+			root["crypto"] = crypto;
 		}
 
 		Json::StyledWriter writer;
