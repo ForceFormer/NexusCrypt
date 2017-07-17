@@ -93,6 +93,10 @@ Keystore LoadKeystore(const std::string& filepath)
 		ss << file.rdbuf();
 		auto content = ss.str();
 		
+		std::transform(content.begin(), content.end(), content.begin(),
+			[](char c) { return (char)tolower(c); }
+		);
+		
 		Json::Value root;
 		Json::Reader reader;
 		if (reader.parse(content.c_str(), root) == false)
@@ -105,8 +109,6 @@ Keystore LoadKeystore(const std::string& filepath)
 
 		{
 			auto& crypto = root["crypto"];
-			if (crypto.empty())
-				crypto = root["Crypto"];
 
 			keystore.crypto.cipher = crypto.get("cipher", "").asString();
 			keystore.crypto.ciphertext = crypto.get("ciphertext", "").asString();			
